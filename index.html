@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Paint</title>
+</head>
+<body>
+ <div id="sketch">
+    <canvas id="paint" style="width:490px;height:220px;border:1px solid #000;"></canvas>
+</div>
+<p>
+<div id="colorboard">
+</div> <button id="clr">Clear</button>
+</p>
+<script>
+
+var colors = new Array();
+colors[0] = 'red';
+colors[1] = 'orange';
+colors[2] = 'yellow';
+colors[3] = 'green';
+colors[4] = 'blue';
+colors[5] = 'indigo';
+colors[6] = 'violet';
+colors[7] = 'black';
+
+
+var currentColor = 'black';
+
+
+	function setColor(cname) {
+		currentColor = cname;
+	}
+
+(function() {
+    var canvas = document.querySelector('#paint');
+	canvas.style.cursor = 'pointer';
+    var ctx = canvas.getContext('2d');
+	var colorTable = '';
+	for(var i = 0; i < colors.length; i++) {
+		colorTable += '<div id="' + colors[i] +'" style="background:' + colors[i] +';width:25px;height:25px;cursor:pointer;display:inline-block;" onclick="setColor(\'' + colors[i] + '\')"></div>';
+	}
+	document.getElementById('colorboard').innerHTML = colorTable;
+	
+
+
+    var sketch = document.querySelector('#sketch');
+    var sketch_style = getComputedStyle(sketch);
+    canvas.width = parseInt(sketch_style.getPropertyValue('width'));
+    canvas.height = parseInt(sketch_style.getPropertyValue('height'));
+
+    var mouse = {x: 0, y: 0};
+    var last_mouse = {x: 0, y: 0};
+
+    canvas.addEventListener('mousemove', function(e) {
+        last_mouse.x = mouse.x;
+        last_mouse.y = mouse.y;
+
+        mouse.x = e.pageX;
+        mouse.y = e.pageY;
+    }, false);
+
+
+
+
+    canvas.addEventListener('mousedown', function(e) {
+        canvas.addEventListener('mousemove', onPaint, false);
+    }, false);
+
+    canvas.addEventListener('mouseup', function() {
+        canvas.removeEventListener('mousemove', onPaint, false);
+    }, false);
+
+    var onPaint = function() {
+    ctx.lineWidth = 5;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = currentColor;
+
+
+        ctx.beginPath();
+        ctx.moveTo(last_mouse.x, last_mouse.y);
+        ctx.lineTo(mouse.x, mouse.y);
+        ctx.closePath();
+        ctx.stroke();
+    };
+	document.getElementById('clr').onclick = function() {
+	ctx.clearRect ( 0 , 0 , canvas.width, canvas.height );
+	};
+
+}());
+</script>
+</body>
+</html>
